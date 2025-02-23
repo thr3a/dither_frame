@@ -104,10 +104,7 @@ def process_image(image_file):
     if image.height > image.width:
         image = image.rotate(90, expand=True)
     image = image.rotate(180, expand=True)
-    try:
-        resample_filter = Image.Resampling.LANCZOS
-    except AttributeError:
-        resample_filter = Image.LANCZOS
+    resample_filter = Image.Resampling.LANCZOS
     # リサイズ：ターゲットサイズはランドスケープ (例: 1600×1200)
     target_size = get_target_size()
     image = image.resize(target_size, resample_filter)
