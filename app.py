@@ -81,7 +81,8 @@ def update_epaper(image):
         # グローバル変数更新（プレビュー用は dithered な画像を使用）
         current_image = dithered
         buffered = io.BytesIO()
-        dithered.save(buffered, format="PNG")
+        # preview用に180度回転する
+        dithered.rotate(180).save(buffered, format="PNG")
         rendered_image_data = base64.b64encode(buffered.getvalue()).decode('utf-8')
         rendering_complete = True
     except Exception as e:
@@ -130,7 +131,7 @@ INDEX_HTML = """
   </head>
   <body>
     <div class="container">
-      <h1 class="mb-4 text-center">電子ペーパー画像操作</h1>
+      <h1 class="mb-4 text-center">Dither Frame</h1>
       <form id="uploadForm" enctype="multipart/form-data">
         <div class="form-group">
           <label for="image">画像ファイルを選択</label>
