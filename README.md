@@ -1,10 +1,28 @@
 # Dither Frame
-## 環境構築
-[13.3inch e-Paper HAT+ (E) Manual](https://www.waveshare.com/wiki/13.3inch_e-Paper_HAT+_(E)_Manual#Introduction)
-[Demo](https://files.waveshare.com/wiki/13.3inch%20e-Paper%20HAT%2B/13.3inch_e-Paper_E.zip)をダウンロードし、
-`13.3inch_e-Paper_E/RaspberryPi/python/lib`をこのレポジトリのルート直下に移動する
+## プロジェクト概要
+本プロジェクトは、Flask を用いた Web インターフェース経由で、ユーザーがアップロードした画像を電子ペーパーに表示するシステムです。
+Webベースの操作画面から画像のアップロードや回転処理が可能で、Bootstrap によりモバイルにも対応しています。
+また、画像に対しては自動で以下の処理を実施します。
 
-こういうツリー構造にする
+- EXIF 情報に基づく向き補正
+- 縦長画像の場合の 90° 回転による横長化
+- 180° 回転による上下逆転の修正
+- 電子ペーパー用サイズへのリサイズ
+- 自動ヒストグラムストレッチによるコントラスト調整
+- 彩度の強調
+- Floyd–Steinberg の誤差拡散法によるカスタムパレット変換（電子ペーパーが対応している6色に対応）
+
+## 動作環境
+- Raspberry Pi 3B+
+- 電子ペーパー用モジュール: [13.3inch E Ink Spectra 6 (E6) Full color E-Paper Display](https://www.waveshare.com/13.3inch-e-paper-hat-plus-e.htm?sku=29355)
+
+## 環境構築
+以下のリンクからデモファイルをダウンロードしてください。
+waveshareteam/e-paper repositoryの[E-paper_Separate_Program/13.3inch_e-Paper_E/RaspberryPi/python/lib](https://github.com/waveshareteam/e-Paper/tree/master/E-paper_Separate_Program/13.3inch_e-Paper_E/RaspberryPi/python/lib)をダウンロードし、本ディレクトリのルート直下に移動してください。
+
+ディレクトリ構成例
+以下のようなツリー構造となるように配置します。
+
 ```sh
 .
 ├── app.py
@@ -15,84 +33,41 @@
 │   ├── DEV_Config_64_w.so
 │   ├── epd13in3E.py
 │   ├── epdconfig.py
-│   ├── __init__.py
+│   └── __init__.py
 ├── README.md
 └── run.sh
 ```
 
-repository cloneもあり
-[waveshareteam/e-Paper](https://github.com/waveshareteam/e-Paper)
-
-Part Number	Colors	Grey Scale	Resolution	Display size (mm)	Outline Dimension (mm)	Full Refresh Time (s)	Partial Refresh1	Pi Head-er2	Flexi-ble	Interface
-13.3inch e-Paper HAT (E)	E6 full color	2	1600×1200	270.40 × 202.80	284.70 × 208.80	19	 	√	 	SPI
-
-
+次に本レポジトリ直下に仮想環境を作成し、必要なPythonパッケージをインストールします
 ```sh
+$ cd ./dither_frame
 $ python3 -m venv .venv
 $ source .venv/bin/activate
 $ pip install pillow flask
 ```
 
-## 実行
+## Dither Frameの実行
+### Webサーバーの起動
 ```sh
 $ source .venv/bin/activate
 $ sudo python3 app.py
 ```
-20秒くらい初期化に時間がかかる。
+電子ペーパーの初期化に20秒ほどかかった後にWebサーバーが立ち上がります
+sudoで実行することで、80番ポートでlistenします。
 
-## 画像のアップロード
+### 画像のアップロード
+任意のブラウザで指定ホストにアクセスし、画像ファイルをアップロードしてください。
+アップロード後、レンダリング時間を経て、電子ペーパーに画像が表示されます。
 
-[スクショの画像]
-
-画像をアップロードし、20秒ほどレンダリング時間をかけた後に、電子ペーパー上に画像が表示される
-
-
-概要
-
-本プロジェクトは、Flaskを用いたWebインターフェースを介して、ユーザーが画像をアップロードした画像を電子ペーパーに表示します。
-
-特徴
-	•	Webベースの操作画面
-ユーザーはブラウザから画像のアップロードや回転処理を行えます。Bootstrapを利用しており、モバイルにも対応しています。
-	•	画像処理機能
-アップロードまたはダウンロードされた画像に対し、以下の処理を自動で実施します。
-	•	EXIF情報に基づく向き補正
-	•	縦長画像の場合は90°回転による横長化
-	•	180°回転による上下逆転の修正
-	•	ターゲットサイズ（電子ペーパー用サイズ）へのリサイズ
-	•	自動ヒストグラムストレッチによるコントラスト調整
-	•	彩度の強調
-	•	誤差拡散法によるカスタムパレット変換
-電子ペーパーで利用可能な色（red, green, blue, yellow, black, white）に合わせ、Floyd–Steinbergの誤差拡散法を用いて画像を変換します。
-
-動作環境
-	•	Python 3.x
-	•	Flask
-	•	Pillow (PIL)
-	•	電子ペーパー用モジュール (epd13in3E)
-
-使用方法
-	1.	ソースコードの配置
-本コード一式を適切なディレクトリに配置してください。
-	2.	プログラムの実行
-Pythonスクリプトを実行すると、Flaskサーバーが起動するとともに、バックグラウンドで24時間ごとにWebから画像をダウンロードする処理が開始されます。
-	4.	Webインターフェースの利用
-Webブラウザで指定ホスト（例: http://localhost）にアクセスすると、以下の操作が可能です。
-	•	画像ファイルのアップロード
-	•	現在表示中の画像のプレビュー
-	•	「画像を90度回転」ボタンによる画像回転処理
-
-コードの構成
-	•	Flaskアプリケーション
+## コードの構成
+Flask アプリケーション
 主なエンドポイントは以下の通りです。
-	•	/
-メイン画面（画像アップロードフォーム、プレビュー表示）
-	•	/upload
-ユーザーからの画像アップロードを受け付け、画像処理および電子ペーパー更新処理を開始
-	•	/rotate
-現在表示中の画像を90度回転し、更新処理を開始
-	•	/preview
-現在のレンダリング状態とプレビュー画像（Base64エンコード済み）を返却
-	•	画像処理関数
-	•	process_image
 
+- `/`: メイン画面（画像アップロードフォームおよびプレビュー表示）
+- `/upload`: ユーザーからの画像アップロードを受け付け、画像処理および電子ペーパーの更新処理を開始
+- `/rotate`: 現在表示中の画像を 90° 回転し、更新処理を開始
+- `/preview`: 現在のレンダリング状態とプレビュー画像（Base64 エンコード済み）を返却
+- `process_image`: 画像の各種処理（向き補正、リサイズ、ヒストグラムストレッチ、彩度調整、誤差拡散法によるパレット変換）を適用
+
+## 参考資料
+- [13.3inch e-Paper HAT+ (E) Manual](https://www.waveshare.com/wiki/13.3inch_e-Paper_HAT+_(E)_Manual#Introduction)
