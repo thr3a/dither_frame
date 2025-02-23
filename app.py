@@ -63,7 +63,6 @@ def update_epaper(image):
     プレビュー用の Base64 画像としてグローバル変数を更新します。
     ※ターゲットサイズは常にランドスケープ向け (例: 1600×1200) に調整し、
       その後誤差拡散法でカスタムパレット変換を実施します。
-    この処理は time.sleep() 等を含むため、バックグラウンドで実行することを前提とします。
     """
     global current_image, rendered_image_data, rendering_complete
     try:
@@ -96,7 +95,7 @@ def process_image(image_file):
       - 常に180°回転して上下逆転を修正
       - 画像を電子ペーパー表示用のサイズにリサイズ
       - 自動ヒストグラムストレッチでコントラスト調整
-      - 彩度を5.0倍に強調
+      - 彩度を3.0倍に強調
     ※誤差拡散法によるパレット変換は update_epaper 内で実施します。
     """
     image = Image.open(image_file).convert('RGB')
