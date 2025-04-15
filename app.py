@@ -67,7 +67,7 @@ def update_epaper(image):
     global current_image, rendered_image_data, rendering_complete
     try:
         # 再初期化＆クリア
-        epd.Init()
+        epd.init()
         resample_filter = Image.Resampling.LANCZOS
         # ターゲットサイズにフィット（ランドスケープ向け）
         target_size = get_target_size()
