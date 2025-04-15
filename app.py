@@ -12,7 +12,7 @@ import io
 import time
 import threading
 import base64
-import epd13in3E  # ご提示の電子ペーパー用モジュールを利用
+import epd4in0e  # ご提示の電子ペーパー用モジュールを利用
 
 app = Flask(__name__)
 
@@ -22,10 +22,10 @@ rendered_image_data = None
 rendering_complete = False
 
 # 電子ペーパーの初期化（起動時は画像表示しない）
-epd = epd13in3E.EPD()
+epd = epd4in0e.EPD()
 try:
     print("EPD 初期化...")
-    epd.Init()
+    epd.init()
     print("ディスプレイをクリア中...")
     epd.Clear()
 except Exception as e:
