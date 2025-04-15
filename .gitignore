@@ -1,4 +1,4 @@
 .venv
-lib
+# lib
 pic
 run.sh
